@@ -28,6 +28,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/pebble"
 	"github.com/cockroachdb/pebble/bloom"
+
 	"github.com/onflow/go-ethereum/common"
 	"github.com/onflow/go-ethereum/ethdb"
 	"github.com/onflow/go-ethereum/log"
@@ -590,7 +591,10 @@ func (b *batch) Reset() {
 func (b *batch) Replay(w ethdb.KeyValueWriter) error {
 	reader := b.b.Reader()
 	for {
-		kind, k, v, ok := reader.Next()
+		kind, k, v, ok, err := reader.Next()
+		if err != nil {
+			return err
+		}
 		if !ok {
 			break
 		}
